@@ -1,0 +1,112 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 800,
+  "height": 450,
+  "data": {
+    "url": "https://ws.cso.ie/public/api.restful/PxStat.Data.Cube_API.ReadDataset/TEM12/CSV/1.0/en",
+    "format": {"type": "csv", "parse": {"Month": "date:'%Y %B'"}}
+  },
+  "transform": [
+    {
+      "filter": "datum['Type of Vehicle Registration'] == 'New Private Cars' && datum['Type of Fuel'] == 'Electric'"
+    },
+    {"calculate": "year(datum.Month)", "as": "YearVal"},
+    {"calculate": "month(datum.Month) < 6 ? 'H1' : 'H2'", "as": "Half"},
+    {
+      "calculate": "'\\'' + substring(datum.YearVal, 2, 4) + ' ' + datum.Half", 
+      "as": "ShortPeriod"
+    },
+    {
+      "aggregate": [{"op": "sum", "field": "VALUE", "as": "TotalUnits"}],
+      "groupby": ["YearVal", "Half", "ShortPeriod"]
+    },
+    {"filter": "datum.YearVal >= 2016 && datum.YearVal < 2026"},
+    {
+      "calculate": "(datum.YearVal < 2023) || (datum.YearVal == 2023 && datum.Half == 'H1') ? 5000 : 3500",
+      "as": "GrantValue"
+    }
+  ],
+  "encoding": {
+    "x": {
+      "field": "ShortPeriod",
+      "type": "nominal",
+      "title": "Yearly Half-Intervals",
+      "axis": {
+        "labelAngle": 0,
+        "labelOverlap": "parity",
+        "labelPadding": 10
+      }
+    }
+  },
+  "layer": [
+    {
+      "name": "Grants_Bars",
+      "mark": {"type": "bar", "color": "#1f77b4", "opacity": 0.4, "width": {"band": 0.7}},
+      "encoding": {
+        "y": {
+          "field": "GrantValue",
+          "type": "quantitative",
+          "title": "Grant (€)",
+          "axis": {
+            "titleColor": "#1f77b4",
+            "titleAngle": 0,
+            "titleAlign": "left",
+            "titleAnchor": "start",
+            "titleY": -15,
+            "titleX": -45
+          },
+          "scale": {"domain": [0, 6000]}
+        }
+      }
+    },
+    {
+      "name": "Trend_Line",
+      "mark": {
+        "type": "line",
+        "color": "#2ca02c",
+        "strokeWidth": 4,
+        "point": {"size": 80, "color": "#2ca02c"}
+      },
+      "encoding": {
+        "y": {
+          "field": "TotalUnits",
+          "type": "quantitative",
+          "title": "EV Units Sold",
+          "axis": {
+            "orient": "right",
+            "titleColor": "#2ca02c",
+            "titleAngle": 0,
+            "titleAlign": "right",
+            "titleAnchor": "start",
+            "titleY": -15,
+            "titleX": 45
+          }
+        }
+      }
+    },
+    {
+      "name": "Year_Marker",
+      "transform": [{"filter": "datum.ShortPeriod == \"'24 H2\""}],
+      "mark": {"type": "rule", "color": "black", "strokeDash": [2, 2]},
+      "encoding": {"x": {"field": "ShortPeriod"}}
+    },
+    {
+      "name": "Annotation_Label",
+      "transform": [{"filter": "datum.ShortPeriod == \"'24 H2\""}],
+      "mark": {
+        "type": "text",
+        "align": "center",
+        "dy": -10,
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "text": "Entry of Budget EVs"
+      },
+      "encoding": {
+        "x": {"field": "ShortPeriod"},
+        "y": {"value": 0} 
+      }
+    }
+  ],
+  "resolve": {"scale": {"y": "independent"}},
+  "config": {"view": {"stroke": null}, "axis": {"grid": false}}
+}

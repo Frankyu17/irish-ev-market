@@ -1,0 +1,193 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "width": 800,
+  "height": 500,
+  "data": {
+    "url": "https://ws.cso.ie/public/api.restful/PxStat.Data.Cube_API.ReadDataset/TEM12/CSV/1.0/en",
+    "format": {"type": "csv", "parse": {"Month": "date:'%Y %B'"}}
+  },
+  "transform": [
+    {"filter": "datum['Type of Vehicle Registration'] == 'New Private Cars'"},
+    {
+      "calculate": "datum['Type of Fuel'] == 'Petrol and electric hybrid' ? 'Hybrid (HEV)' : datum['Type of Fuel'] == 'Petrol or Diesel plug-in hybrid electric' ? 'Plug-in (PHEV)' : datum['Type of Fuel'] == 'Diesel and electric hybrid' ? 'Hybrid (HEV)' : datum['Type of Fuel']",
+      "as": "FuelGroup"
+    },
+    {
+      "filter": {
+        "field": "FuelGroup",
+        "oneOf": [
+          "Petrol",
+          "Diesel",
+          "Electric",
+          "Hybrid (HEV)",
+          "Plug-in (PHEV)"
+        ]
+      }
+    },
+    {"calculate": "year(datum.Month)", "as": "Y"},
+    {
+      "calculate": "month(datum.Month) < 6 ? datum.Y + 0.5 : datum.Y + 1",
+      "as": "PlotPos"
+    },
+    {
+      "calculate": "datum.Y == 2026 && month(datum.Month) == 0 ? 2026.1 : datum.PlotPos",
+      "as": "PlotPosFinal"
+    },
+    {"filter": "datum.PlotPosFinal >= 2016 && datum.PlotPosFinal <= 2026.1"},
+    {
+      "calculate": "datum.PlotPosFinal == 2026.1 ? '2026 Jan' : month(datum.Month) < 6 ? 'Jan - Jun ' + datum.Y : 'Jul - Dec ' + datum.Y",
+      "as": "PeriodLabel"
+    },
+    {
+      "joinaggregate": [{"op": "sum", "field": "VALUE", "as": "PeriodTotal"}],
+      "groupby": ["PlotPosFinal"]
+    },
+    {
+      "joinaggregate": [{"op": "sum", "field": "VALUE", "as": "Units"}],
+      "groupby": ["PlotPosFinal", "FuelGroup"]
+    },
+    {"calculate": "datum.Units / datum.PeriodTotal", "as": "Share"}
+  ],
+  "layer": [
+    {
+      "name": "LineSelection",
+      "params": [
+        {
+          "name": "hover_fuel",
+          "select": {
+            "type": "point",
+            "fields": ["FuelGroup"],
+            "on": "mouseover",
+            "clear": "mouseout"
+          }
+        }
+      ],
+      "mark": {"type": "line", "strokeWidth": 15, "stroke": "transparent"},
+      "encoding": {
+        "x": {"field": "PlotPosFinal", "type": "quantitative"},
+        "y": {"field": "Share", "type": "quantitative"},
+        "color": {"field": "FuelGroup"}
+      }
+    },
+    {
+      "name": "VisibleLines",
+      "mark": {"type": "line", "strokeWidth": 3, "interpolate": "monotone"},
+      "encoding": {
+        "x": {
+          "field": "PlotPosFinal",
+          "type": "quantitative",
+          "title": "Year",
+          "scale": {"domain": [2016, 2027]},
+          "axis": {
+            "values": [
+              2016,
+              2017,
+              2018,
+              2019,
+              2020,
+              2021,
+              2022,
+              2023,
+              2024,
+              2025,
+              2026,
+              2027
+            ],
+            "format": "d",
+            "labelAngle": 0,
+            "grid": true
+          }
+        },
+        "y": {
+          "field": "Share",
+          "type": "quantitative",
+          "title": "Market Share %",
+          "axis": {
+            "format": ".0%", 
+            "grid": true,
+            "titleAngle": 0,
+            "titleAlign": "left",
+            "titleAnchor": "start",
+            "titleY": -15,
+            "titleX": -40
+          }
+        },
+        "color": {
+          "field": "FuelGroup",
+          "scale": {
+            "domain": [
+              "Hybrid (HEV)",
+              "Electric",
+              "Petrol",
+              "Plug-in (PHEV)",
+              "Diesel"
+            ],
+            "range": ["#2471A3", "#2CA02C", "#D62728", "#A3E4D7", "#7F7F7F"]
+          },
+          "legend": null
+        },
+        "opacity": {
+          "condition": {"param": "hover_fuel", "value": 1, "empty": true},
+          "value": 0.15
+        }
+      }
+    },
+    {
+      "name": "DataPoints",
+      "mark": {"type": "circle", "size": 60},
+      "encoding": {
+        "x": {"field": "PlotPosFinal", "type": "quantitative"},
+        "y": {"field": "Share", "type": "quantitative"},
+        "color": {"field": "FuelGroup"},
+        "opacity": {
+          "condition": {"param": "hover_fuel", "value": 1, "empty": true},
+          "value": 0.15
+        },
+        "tooltip": [
+          {"field": "PeriodLabel", "title": "Time Period"},
+          {"field": "FuelGroup", "title": "Fuel Type"},
+          {"field": "Units", "title": "New Car Units", "format": ","},
+          {"field": "Share", "title": "Market Share", "format": ".1%"}
+        ]
+      }
+    },
+    {
+      "name": "Anchored_Dotted_Marker",
+      "data": {"values": [{"x": 2026.1, "y": 0, "y2": 0.45}]},
+      "mark": {"type": "rule", "color": "#444", "strokeWidth": 1.5, "strokeDash": [3, 3]},
+      "encoding": {
+        "x": {"field": "x", "type": "quantitative"},
+        "y": {"field": "y", "type": "quantitative"},
+        "y2": {"field": "y2", "type": "quantitative"}
+      }
+    },{
+      "name": "Marker_Text_Label",
+      "data": {"values": [{"x": 2026.1, "y": 0.46, "text": "2026 Jan"}]},
+      "mark": {"type": "text", "align": "center", "baseline": "bottom", "fontWeight": "bold", "fontSize": 12},
+      "encoding": {
+        "x": {"field": "x", "type": "quantitative"},
+        "y": {"field": "y", "type": "quantitative"},
+        "text": {"field": "text"}
+      }
+    },
+    {
+      "name": "EndLabels",
+      "transform": [{"filter": "datum.PlotPosFinal == 2026.1"}],
+      "mark": {"type": "text", "align": "left", "dx": 10, "fontWeight": "bold"},
+      "encoding": {
+        "x": {"field": "PlotPosFinal", "type": "quantitative"},
+        "y": {"field": "Share", "type": "quantitative"},
+        "text": {"field": "FuelGroup"},
+        "color": {"field": "FuelGroup"},
+        "opacity": {
+          "condition": {"param": "hover_fuel", "value": 1, "empty": true},
+          "value": 0.15
+        }
+      }
+    }
+  ],
+  "config": {
+    "view": {"stroke": null},
+    "axis": {"labelFontSize": 11, "titleFontSize": 13}
+  }
+}

@@ -1,0 +1,278 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "values": [
+      {
+        "Year": "2024",
+        "Model": "Tesla Model 3",
+        "Share": 9.4,
+        "Units": 1647,
+        "Price": 42000
+      },
+      {
+        "Year": "2024",
+        "Model": "Volkswagen ID.4",
+        "Share": 8.7,
+        "Units": 1514,
+        "Price": 40000
+      },
+      {
+        "Year": "2024",
+        "Model": "Tesla Model Y",
+        "Share": 7.3,
+        "Units": 1279,
+        "Price": 46000
+      },
+      {
+        "Year": "2024",
+        "Model": "Kia EV6",
+        "Share": 4.4,
+        "Units": 759,
+        "Price": 52000
+      },
+      {
+        "Year": "2024",
+        "Model": "Hyundai Kona EV",
+        "Share": 4.3,
+        "Units": 746,
+        "Price": 37000
+      },
+      {
+        "Year": "2024",
+        "Model": "BYD Seal",
+        "Share": 4,
+        "Units": 693,
+        "Price": 45000
+      },
+      {
+        "Year": "2024",
+        "Model": "MG4 EV",
+        "Share": 3.4,
+        "Units": 597,
+        "Price": 30000
+      },
+      {
+        "Year": "2024",
+        "Model": "Volkswagen ID.3",
+        "Share": 3.2,
+        "Units": 558,
+        "Price": 36000
+      },
+      {
+        "Year": "2024",
+        "Model": "Skoda Enyaq",
+        "Share": 3.1,
+        "Units": 536,
+        "Price": 42000
+      },
+      {
+        "Year": "2024",
+        "Model": "Hyundai Ioniq 5",
+        "Share": 2.7,
+        "Units": 475,
+        "Price": 45000
+      },
+      {
+        "Year": "2025",
+        "Model": "Volkswagen ID.4",
+        "Share": 13.2,
+        "Units": 3120,
+        "Price": 38500
+      },
+      {
+        "Year": "2025",
+        "Model": "Tesla Model 3",
+        "Share": 9.1,
+        "Units": 2140,
+        "Price": 43000
+      },
+      {
+        "Year": "2025",
+        "Model": "Kia EV3",
+        "Share": 7,
+        "Units": 1650,
+        "Price": 37000
+      },
+      {
+        "Year": "2025",
+        "Model": "Tesla Model Y",
+        "Share": 6.7,
+        "Units": 1580,
+        "Price": 48000
+      },
+      {
+        "Year": "2025",
+        "Model": "Hyundai Inster",
+        "Share": 5.1,
+        "Units": 1210,
+        "Price": 19600
+      },
+      {
+        "Year": "2025",
+        "Model": "MG4 EV",
+        "Share": 5,
+        "Units": 1180,
+        "Price": 30500
+      },
+      {
+        "Year": "2025",
+        "Model": "Skoda Enyaq",
+        "Share": 4.9,
+        "Units": 1150,
+        "Price": 41000
+      },
+      {
+        "Year": "2025",
+        "Model": "Hyundai Kona EV",
+        "Share": 4.3,
+        "Units": 1020,
+        "Price": 36995
+      },
+      {
+        "Year": "2025",
+        "Model": "Kia EV6",
+        "Share": 4,
+        "Units": 940,
+        "Price": 51000
+      },
+      {
+        "Year": "2025",
+        "Model": "BYD Atto 3",
+        "Share": 3.4,
+        "Units": 790,
+        "Price": 38000
+      },
+      {
+        "Year": "2026 (Jan)",
+        "Model": "Volkswagen ID.4",
+        "Share": 9.5,
+        "Units": 697,
+        "Price": 34850
+      },
+      {
+        "Year": "2026 (Jan)",
+        "Model": "Hyundai Inster",
+        "Share": 4.4,
+        "Units": 322,
+        "Price": 19600
+      },
+      {
+        "Year": "2026 (Jan)",
+        "Model": "Kia EV3",
+        "Share": 3.9,
+        "Units": 285,
+        "Price": 36800
+      },
+      {
+        "Year": "2026 (Jan)",
+        "Model": "Hyundai Kona EV",
+        "Share": 3.5,
+        "Units": 254,
+        "Price": 36995
+      },
+      {
+        "Year": "2026 (Jan)",
+        "Model": "Hyundai Ioniq 5",
+        "Share": 2.9,
+        "Units": 210,
+        "Price": 45000
+      },
+      {
+        "Year": "2026 (Jan)",
+        "Model": "Toyota bZ4X",
+        "Share": 2.7,
+        "Units": 195,
+        "Price": 42000
+      },
+      {
+        "Year": "2026 (Jan)",
+        "Model": "BYD Sealion 7",
+        "Share": 2.5,
+        "Units": 182,
+        "Price": 45435
+      },
+      {
+        "Year": "2026 (Jan)",
+        "Model": "Skoda Elroq",
+        "Share": 2.3,
+        "Units": 168,
+        "Price": 38000
+      },
+      {
+        "Year": "2026 (Jan)",
+        "Model": "MG MG5",
+        "Share": 2,
+        "Units": 145,
+        "Price": 31000
+      },
+      {
+        "Year": "2026 (Jan)",
+        "Model": "Ford Explorer",
+        "Share": 1.8,
+        "Units": 132,
+        "Price": 45000
+      }
+    ]
+  },
+  "transform": [
+    {
+      "calculate": "datum.Price > 50000 ? 'Premium (>€50k)' : datum.Price >= 35000 ? 'Mid-Range (€35k-€50k)' : datum.Price >= 20000 ? 'Value (€20k-€35k)' : 'Budget (<€20k)'",
+      "as": "Tier"
+    }
+  ],
+  "facet": {
+    "column": {
+      "field": "Year",
+      "type": "nominal",
+      "sort": ["2024", "2025", "2026 (Jan)"]
+    }
+  },
+  "spec": {
+    "width": 220,
+    "height": 350,
+    "mark": {"type": "bar", "cornerRadiusEnd": 3},
+    "encoding": {
+      "y": {
+        "field": "Model", 
+        "type": "nominal", 
+        "sort": "-x",
+        "axis": {
+          "titleAngle": 0,
+          "titleAlign": "left",
+          "titleAnchor": "start",
+          "titleY": -2,
+          "titleX": -45
+        }
+      },
+      "x": {
+        "field": "Share",
+        "type": "quantitative",
+        "title": "% Share of EV Market",
+        "scale": {"domain": [0, 15]}
+      },
+      "color": {
+        "field": "Tier",
+        "type": "nominal",
+        "scale": {
+          "domain": [
+            "Premium (>€50k)",
+            "Mid-Range (€35k-€50k)",
+            "Value (€20k-€35k)",
+            "Budget (<€20k)"
+          ],
+          "range": ["#d62828", "#ffc300", "#76c893", "#2a9d8f"]
+        },
+        "legend": {"orient": "bottom"}
+      },
+      "tooltip": [
+        {"field": "Model"},
+        {"field": "Units"},
+        {"field": "Share"},
+        {"field": "Price"},
+        {"field": "Tier"}
+      ]
+    }
+  },
+  "resolve": {"scale": {"y": "independent"}},
+  "config": {}
+}
