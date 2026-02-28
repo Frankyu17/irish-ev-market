@@ -1,6 +1,18 @@
 import streamlit as st
 import json
+import os
+def load_clean_json(filename):
+    base_path = os.path.dirname(__file__)
+    full_path = os.path.join(base_path, filename)
+    
+    try:
+        with open(full_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
 
+        st.sidebar.error(f"⚠️ File Not Found: {filename}")
+        st.sidebar.info(f"Looking in: {full_path}")
+        return None
 st.set_page_config(
     page_title="Ireland EV Market Analysis",
     layout="wide",
@@ -142,4 +154,5 @@ with col_mid3:
         </div>
         """, unsafe_allow_html=True)
 st.markdown("<br>", unsafe_allow_html=True)
+
 st.caption("Data provided by Central Statistics Office (CSO) Ireland. All charts interactive.")
