@@ -67,14 +67,6 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 
-def load_clean_json(filename):
-    try:
-        with open(filename, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return None
-
-
 st.title("Is the January 2026 'Electric Vehicle (EV) Crossover' a permanent structural shift in Irish consumer behaviour, or a temporary market spike?")
 st.markdown("The big switch from gas cars to electric cars.")
 st.markdown("---")
@@ -156,4 +148,5 @@ with col_mid3:
 st.markdown("<br>", unsafe_allow_html=True)
 
 st.caption("Data provided by Central Statistics Office (CSO) Ireland. All charts interactive.")
+
 
